@@ -12,8 +12,8 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "service")
-public class Service {
+@Table(name = "service_offering")
+public class ServiceOffering {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -37,10 +37,10 @@ public class Service {
     @JoinColumn(name = "category_id")
     private ServiceCategory category;
 
-    @OneToMany(mappedBy = "service", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "serviceOffering", cascade = CascadeType.ALL)
     private List<Order> orders;
 
-    @OneToMany(mappedBy = "service", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "serviceOffering", cascade = CascadeType.ALL)
     private List<Review> reviews;
 }
 

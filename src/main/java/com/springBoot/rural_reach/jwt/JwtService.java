@@ -1,0 +1,107 @@
+package com.springBoot.rural_reach.jwt;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Service;
+
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
+import java.security.Key;
+import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Function;
+
+@Service
+public class JwtService {
+
+//    private static final String SECRET = "TmV3U2VjcmV0S2V5Rm9ySldUU2lnbmluZ1B1cnBvc2VzMTIzNDU2Nzg=\r\n";
+    public static final long ACCESS_TOKEN_EXPIRATION = 1000 * 60 * 60 * 24 * 7; // 7 days
+    public static final long REFRESH_TOKEN_EXPIRATION = 1000 * 60 * 60 * 24 * 7; // 7 days
+
+    private String secretKey;
+
+    public JwtService(){
+        secretKey = generateSecretKey();
+    }
+
+    public String generateSecretKey() {
+        try {
+            KeyGenerator keyGen = KeyGenerator.getInstance("HmacSHA256");
+            SecretKey secretKey = keyGen.generateKey();
+            System.out.println("Secret Key : " + secretKey.toString());
+            return Base64.getEncoder().encodeToString(secretKey.getEncoded());
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("Error generating secret key", e);
+        }
+    }
+
+    //for generating the token
+    public String generateAccessToken(String username) {
+        Map<String, Object> claims = new HashMap<>();
+        return Jwts.builder()
+                .claims(claims)
+                .subject(username)
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_EXPIRATION))
+                .claim("tokenName", "accessToken")
+                .signWith(getKey(), SignatureAlgorithm.HS256).compact();
+
+    }
+
+    //for generating the token
+    public String generateRefreshToken(String username) {
+        Map<String, Object> claims = new HashMap<>();
+        return Jwts.builder()
+                .claims(claims)
+                .subject(username)
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + REFRESH_TOKEN_EXPIRATION))
+                .claim("tokenName", "refreshToken")
+                .signWith(getKey(), SignatureAlgorithm.HS256).compact();
+
+    }
+
+    private SecretKey getKey() {
+        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
+        return Keys.hmacShaKeyFor(keyBytes);
+    }
+
+    public String extractUserName(String token) {
+        // extract the username from jwt token
+        return extractClaim(token, Claims::getSubject);
+    }
+
+    public <T> T extractClaim(String token, Function<Claims, T> claimResolver) {
+        final Claims claims = extractAllClaims(token);
+        return claimResolver.apply(claims);
+    }
+
+    public Claims extractAllClaims(String token) {
+        return Jwts.parser()
+                .verifyWith(getKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+    }
+
+    public boolean validateToken(String token, UserDetails userDetails) { //userDetails-from db , token gives the user
+        final String userName = extractUserName(token);
+        return (userName.equals(userDetails.getUsername()) && !isTokenExpired(token));
+    }
+
+    private boolean isTokenExpired(String token) {
+        return extractExpiration(token).before(new Date());
+    }
+
+    private Date extractExpiration(String token) {
+        return extractClaim(token, Claims::getExpiration);
+    }
+}
+

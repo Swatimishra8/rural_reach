@@ -28,7 +28,7 @@ public class Review {
     private User customer;
 
     @ManyToOne
-    @JoinColumn(name = "service_id")
-    private Service service;
+    @JoinColumn(name = "service_offering_id")
+    private ServiceOffering serviceOffering;
 }
 

@@ -18,8 +18,8 @@ public class Order {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "service_id")
-    private Service service;
+    @JoinColumn(name = "service_offering_id")
+    private ServiceOffering serviceOffering;
 
     @ManyToOne
     @JoinColumn(name = "customer_id")

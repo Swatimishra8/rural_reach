@@ -21,6 +21,6 @@ public class ServiceCategory {
     private String description;
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
-    private List<Service> services;
+    private List<ServiceOffering> serviceOfferings;
 }
 

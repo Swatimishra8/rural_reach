@@ -3,6 +3,7 @@ package com.springBoot.rural_reach.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -22,5 +23,13 @@ public class Role {
 
     @OneToMany(mappedBy = "role")
     private Set<User> users;
+
+    @ManyToMany
+    @JoinTable(
+            name = "roles_permissions",
+            joinColumns = @JoinColumn(name = "role_id"),
+            inverseJoinColumns = @JoinColumn(name = "permission_id")
+    )
+    private Set<Permission> permissions = new HashSet<>();
 }
 

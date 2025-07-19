@@ -1,5 +1,6 @@
 package com.springBoot.rural_reach.entity;
 
+import com.springBoot.rural_reach.enums.ApprovalStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -15,32 +16,44 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name;
+    private String firstName;
+
+    private String lastName;
 
     @Column(unique = true)
     private String email;
 
     private String password;
 
-    private String phone;
+    private String phoneNumber;
 
     private String address;
 
-    private String pincode;
+    private String pinCode;
 
-    private Boolean isApproved;
+
+    @Enumerated(EnumType.STRING)
+    private ApprovalStatus approvalStatus = ApprovalStatus.PENDING;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "role_id")
     private Role role;
 
-    @OneToMany(mappedBy = "vendor", cascade = CascadeType.ALL)
-    private List<Service> services;
+//    @ManyToMany(fetch = FetchType.EAGER,cascade = CascadeType.DETACH)
+//    @JoinTable(
+//            name = "users_permissions",
+//            joinColumns = @JoinColumn(name = "users_id"),
+//            inverseJoinColumns = @JoinColumn(name = "permissions_id")
+//    )
+//    private Set<Permission> permissions= new HashSet<>();
 
-    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
-    private List<Order> orders;
-
-    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
-    private List<Review> reviews;
+//    @OneToMany(mappedBy = "vendor", cascade = CascadeType.ALL)
+//    private List<ServiceOffering> serviceOfferings;
+//
+//    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
+//    private List<Order> orders;
+//
+//    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
+//    private List<Review> reviews;
 }
 

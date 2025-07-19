@@ -1,0 +1,18 @@
+Admin roles -
+1. CRUD - service categories
+2. CRUD - vendor
+3. Read - vendor monthly earnings
+
+Vendor roles -
+1. CRUD - services (done)
+2. CRUD - service categories
+3. CRUD  - enquiries
+
+customer roles -
+1. read - services (done)
+2. read - service categories
+3. read - vendors
+
+
+reviews
+
