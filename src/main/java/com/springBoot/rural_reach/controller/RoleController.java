@@ -13,6 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/roles")
+@PreAuthorize("hasRole('ADMIN')")
 public class RoleController {
 
     @Autowired
@@ -20,21 +21,20 @@ public class RoleController {
 
 
     @GetMapping("/all")
-    public List<Role> getAlRoles(){
-        return roleService.getAllRoles();
+    public ResponseEntity<List<RoleDto>> getAlRoles(){
+        return ResponseEntity.ok(roleService.getAllRoles());
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @PostMapping("/create")
-    public ResponseEntity<Role> createRole(@RequestBody RoleDto roleDto){
-        Role createdRole = roleService.createRoleWithPermissions(roleDto);
+    public ResponseEntity<RoleDto> createRole(@RequestBody RoleDto roleDto){
+        RoleDto createdRole = roleService.createRoleWithPermissions(roleDto);
         return new ResponseEntity<>(createdRole, HttpStatus.CREATED);
     }
 
 
     @PatchMapping("/update/{id}")
-    public ResponseEntity<Role> updateRole(@PathVariable Long id,@RequestBody RoleDto roleDto){
-        Role updatedRole = roleService.updateRole(id,roleDto);
+    public ResponseEntity<RoleDto> updateRole(@PathVariable Long id,@RequestBody RoleDto roleDto){
+        RoleDto updatedRole = roleService.updateRole(id,roleDto);
         return ResponseEntity.ok(updatedRole);
     }
 

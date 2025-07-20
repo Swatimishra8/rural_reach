@@ -1,5 +1,6 @@
 package com.springBoot.rural_reach.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -22,14 +23,16 @@ public class Role {
     private String name; // e.g., CUSTOMER, VENDOR, ADMIN
 
     @OneToMany(mappedBy = "role")
-    private Set<User> users;
+//    @JsonManagedReference
+    private Set<User> users  = new HashSet<>();
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "roles_permissions",
             joinColumns = @JoinColumn(name = "role_id"),
             inverseJoinColumns = @JoinColumn(name = "permission_id")
     )
+//    @JsonManagedReference
     private Set<Permission> permissions = new HashSet<>();
 }
 

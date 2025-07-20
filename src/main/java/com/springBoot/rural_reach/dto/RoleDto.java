@@ -8,7 +8,6 @@ import java.util.Set;
 
 @Data
 public class RoleDto {
-    private Long id;
 
     @NotBlank(message = "Provide a Role Name")
     private String name;

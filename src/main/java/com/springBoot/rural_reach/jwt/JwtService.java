@@ -21,26 +21,26 @@ import java.util.function.Function;
 @Service
 public class JwtService {
 
-//    private static final String SECRET = "TmV3U2VjcmV0S2V5Rm9ySldUU2lnbmluZ1B1cnBvc2VzMTIzNDU2Nzg=\r\n";
+    private static final String SECRET = "TmV3U2VjcmV0S2V5Rm9ySldUU2lnbmluZ1B1cnBvc2VzMTIzNDU2Nzg=\r\n";
     public static final long ACCESS_TOKEN_EXPIRATION = 1000 * 60 * 60 * 24 * 7; // 7 days
     public static final long REFRESH_TOKEN_EXPIRATION = 1000 * 60 * 60 * 24 * 7; // 7 days
 
-    private String secretKey;
+//    private String secretKey;
 
-    public JwtService(){
-        secretKey = generateSecretKey();
-    }
+//    public JwtService(){
+//        secretKey = generateSecretKey();
+//    }
 
-    public String generateSecretKey() {
-        try {
-            KeyGenerator keyGen = KeyGenerator.getInstance("HmacSHA256");
-            SecretKey secretKey = keyGen.generateKey();
-            System.out.println("Secret Key : " + secretKey.toString());
-            return Base64.getEncoder().encodeToString(secretKey.getEncoded());
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("Error generating secret key", e);
-        }
-    }
+//    public String generateSecretKey() {
+//        try {
+//            KeyGenerator keyGen = KeyGenerator.getInstance("HmacSHA256");
+//            SecretKey secretKey = keyGen.generateKey();
+//            System.out.println("Secret Key : " + secretKey.toString());
+//            return Base64.getEncoder().encodeToString(secretKey.getEncoded());
+//        } catch (NoSuchAlgorithmException e) {
+//            throw new RuntimeException("Error generating secret key", e);
+//        }
+//    }
 
     //for generating the token
     public String generateAccessToken(String username) {
@@ -69,7 +69,7 @@ public class JwtService {
     }
 
     private SecretKey getKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
+        byte[] keyBytes = Decoders.BASE64.decode(SECRET);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 

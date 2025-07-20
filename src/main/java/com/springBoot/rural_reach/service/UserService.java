@@ -6,6 +6,7 @@ import com.springBoot.rural_reach.entity.Role;
 import com.springBoot.rural_reach.entity.User;
 import com.springBoot.rural_reach.enums.ApprovalStatus;
 import com.springBoot.rural_reach.exceptions.RoleException;
+import com.springBoot.rural_reach.exceptions.UserAlreadyExistsException;
 import com.springBoot.rural_reach.exceptions.UserNotFoundException;
 import com.springBoot.rural_reach.repository.PermissionRepo;
 import com.springBoot.rural_reach.repository.RoleRepo;
@@ -47,6 +48,11 @@ public class UserService {
     //CREATING a User along with Roles and Permissions
     @Transactional //to make an operation atomic(either it completes fully or reverted if any process fails)
     public User createUser(UserDto userDto) {
+        // 1. Check if email already exists
+        if (userRepo.findByEmail(userDto.getEmailId()).isPresent()) {
+            throw new UserAlreadyExistsException(userDto.getEmailId());
+        }
+
         Role role = roleRepo.findById(userDto.getRoleId())
                 .orElseThrow(RoleException::new);
 
@@ -54,7 +60,7 @@ public class UserService {
         user.setFirstName(userDto.getFirstName());
         user.setLastName(userDto.getLastName());
         user.setPhoneNumber(userDto.getPhoneNumber());
-        user.setEmail(userDto.getEmailTd());
+        user.setEmail(userDto.getEmailId());
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
         user.setRole(role);
 
@@ -100,8 +106,8 @@ public class UserService {
         if (userDto.getLastName() != null)
             user.setLastName(userDto.getLastName());
 
-        if (userDto.getEmailTd() != null)
-            user.setEmail(userDto.getEmailTd());
+        if (userDto.getEmailId() != null)
+            user.setEmail(userDto.getEmailId());
 
         if (userDto.getPhoneNumber() != null)
             user.setPhoneNumber(userDto.getPhoneNumber());

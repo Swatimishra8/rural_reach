@@ -37,8 +37,8 @@ public class AuthController {
     public JwtResponseDto registerUser(@RequestBody UserDto userDto) {
         userService.createUser(userDto); // save the user
 
-        String accessToken = jwtService.generateAccessToken(userDto.getEmailTd());
-        RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDto.getEmailTd());
+        String accessToken = jwtService.generateAccessToken(userDto.getEmailId());
+        RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDto.getEmailId());
 
         return JwtResponseDto.builder()
                 .accessToken(accessToken)

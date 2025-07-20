@@ -1,5 +1,6 @@
 package com.springBoot.rural_reach.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -26,6 +27,7 @@ public class Permission {
     }
 //
 //    @ManyToMany(mappedBy = "permissions")
+////    @JsonBackReference
 //    private Set<Role> roles;
 }
 

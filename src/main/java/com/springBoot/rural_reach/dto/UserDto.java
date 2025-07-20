@@ -25,7 +25,7 @@ public class UserDto {
 
     @Email(message = "Email should be valid")
     @NotEmpty(message = "Email cannot be empty")
-    private String emailTd;
+    private String emailId;
 
     @NotEmpty(message = "Password cannot be empty")
     private String password;

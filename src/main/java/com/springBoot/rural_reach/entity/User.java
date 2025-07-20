@@ -1,5 +1,6 @@
 package com.springBoot.rural_reach.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.springBoot.rural_reach.enums.ApprovalStatus;
 import jakarta.persistence.*;
 import lombok.*;
@@ -37,6 +38,7 @@ public class User {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "role_id")
+//    @JsonBackReference
     private Role role;
 
 //    @ManyToMany(fetch = FetchType.EAGER,cascade = CascadeType.DETACH)

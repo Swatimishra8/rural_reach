@@ -58,12 +58,8 @@ public class SecurityConfig {
         http.csrf(customizer->customizer.disable());
         http.authorizeHttpRequests(request->request//to avoid authentication
                 .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
-                // vendor-only endpoints
-                .requestMatchers("/vendor/**").hasRole("VENDOR")
                 // customer-only endpoints
                 .requestMatchers( "/reviews/**").hasRole("CUSTOMER")
-                // admin-only endpoints
-                .requestMatchers("/admin/**").hasRole("ADMIN")
                 // public service browsing
                 .requestMatchers("/services/**", "/categories/**").permitAll()
                 .anyRequest().authenticated());
