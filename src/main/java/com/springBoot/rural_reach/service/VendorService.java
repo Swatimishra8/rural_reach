@@ -38,12 +38,12 @@ public class VendorService {
         User vendor = userRepo.findById(vendorId)
                 .orElseThrow(() -> new UserNotFoundException("Vendor not found"));
         ServiceOffering newService = new ServiceOffering();
-        service.setTitle(serviceDto.getTitle());
-        service.setDescription(serviceDto.getDescription());
-        service.setPrice(serviceDto.getPrice());
-        service.setIsActive(true);
-        service.setCreatedAt(LocalDateTime.now());
-        service.setVendor(vendor);
+        newService.setTitle(serviceDto.getTitle());
+        newService.setDescription(serviceDto.getDescription());
+        newService.setPrice(serviceDto.getPrice());
+        newService.setIsActive(true);
+        newService.setCreatedAt(LocalDateTime.now());
+        newService.setVendor(vendor);
         ServiceOffering saved = serviceRepo.save(newService);
         return toDto(saved);
     }
