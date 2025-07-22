@@ -9,8 +9,6 @@ import java.util.List;
 
 @Repository
 public interface VendorServiceRepo extends JpaRepository<ServiceOffering, Long> {
-
     List<ServiceOffering> findByVendor(User vendor);
-
 }
 

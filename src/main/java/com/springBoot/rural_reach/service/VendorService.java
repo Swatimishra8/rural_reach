@@ -1,5 +1,6 @@
 package com.springBoot.rural_reach.service;
 
+import com.springBoot.rural_reach.dto.ServiceDto;
 import com.springBoot.rural_reach.entity.ServiceOffering;
 import com.springBoot.rural_reach.entity.User;
 import com.springBoot.rural_reach.exceptions.ServiceNotFoundException;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -22,24 +24,32 @@ public class VendorService {
     private final UserRepo userRepo;
 
     // List services owned by this vendor
-    public List<ServiceOffering> getServicesByVendorId(Long vendorId) {
+    public List<ServiceDto> getServicesByVendorId(Long vendorId) {
         User vendor = userRepo.findById(vendorId)
                 .orElseThrow(() -> new UserNotFoundException("Vendor not found"));
-        return serviceRepo.findByVendor(vendor);
+        return serviceRepo.findByVendor(vendor)
+                .stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
     }
 
     // Create a service for a vendor
-    public ServiceOffering createServiceForVendor(Long vendorId, ServiceOffering serviceDto) {
+    public ServiceDto createServiceForVendor(Long vendorId, ServiceDto serviceDto) {
         User vendor = userRepo.findById(vendorId)
                 .orElseThrow(() -> new UserNotFoundException("Vendor not found"));
-        serviceDto.setVendor(vendor);
-        serviceDto.setCreatedAt(LocalDateTime.now());
-        serviceDto.setIsActive(true);
-        return serviceRepo.save(serviceDto);
+        ServiceOffering newService = new ServiceOffering();
+        service.setTitle(serviceDto.getTitle());
+        service.setDescription(serviceDto.getDescription());
+        service.setPrice(serviceDto.getPrice());
+        service.setIsActive(true);
+        service.setCreatedAt(LocalDateTime.now());
+        service.setVendor(vendor);
+        ServiceOffering saved = serviceRepo.save(newService);
+        return toDto(saved);
     }
 
     // Update a vendor’s own service
-    public ServiceOffering updateServiceForVendor(Long vendorId, Long serviceId, ServiceOffering updated) {
+    public ServiceDto updateServiceForVendor(Long vendorId, Long serviceId, ServiceDto updated) {
         ServiceOffering service = serviceRepo.findById(serviceId)
                 .orElseThrow(() -> new ServiceNotFoundException("Service not found"));
         if (!service.getVendor().getId().equals(vendorId)) {
@@ -48,7 +58,9 @@ public class VendorService {
         service.setTitle(updated.getTitle());
         service.setDescription(updated.getDescription());
         service.setPrice(updated.getPrice());
-        return serviceRepo.save(service);
+        service.setIsActive(updated.getIsActive());
+        ServiceOffering updatedService = serviceRepo.save(service);
+        return toDto(updatedService);
     }
 
     // Delete a vendor’s own service
@@ -60,5 +72,23 @@ public class VendorService {
         }
         serviceRepo.delete(service);
     }
+
+    public ServiceDto toDto(ServiceOffering service) {
+        ServiceDto dto = new ServiceDto();
+        dto.setId(service.getId());
+        dto.setTitle(service.getTitle());
+        dto.setDescription(service.getDescription());
+        dto.setPrice(service.getPrice());
+        dto.setIsActive(service.getIsActive());
+        dto.setCreatedAt(service.getCreatedAt());
+        if (service.getVendor() != null) {
+            dto.setVendorId(service.getVendor().getId());
+        }
+        if (service.getCategory() != null) {
+            dto.setCategoryId(service.getCategory().getId());
+        }
+        return dto;
+    }
+
 }
 

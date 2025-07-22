@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -40,14 +41,18 @@ public class UserService {
     private BCryptPasswordEncoder passwordEncoder;
 
     //DISPLAYING all the Users
-    public List<User> getAllUsers() {
-        Role vendorRole = roleRepo.findByName("VENDOR").orElseThrow(RoleException::new);
-        return userRepo.findByRole_id(vendorRole.getId());
+    public List<UserDto> getAllVendors() {
+        Role vendorRole = roleRepo.findByName("VENDOR")
+                .orElseThrow(RoleException::new);
+        return userRepo.findByRole_id(vendorRole.getId())
+                .stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
     }
 
     //CREATING a User along with Roles and Permissions
     @Transactional //to make an operation atomic(either it completes fully or reverted if any process fails)
-    public User createUser(UserDto userDto) {
+    public UserDto createUser(UserDto userDto) {
         // 1. Check if email already exists
         if (userRepo.findByEmail(userDto.getEmailId()).isPresent()) {
             throw new UserAlreadyExistsException(userDto.getEmailId());
@@ -69,11 +74,11 @@ public class UserService {
             permissions.addAll(role.getPermissions());
         }
         role.setPermissions(permissions);
-        return userRepo.save(user);
+        return toDto(userRepo.save(user));
     }
 
     //APPROVING a Vendor
-    public User approveVendor(Long userId,  String status) {
+    public UserDto approveVendor(Long userId,  String status) {
         User user = userRepo.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found !!"));
         try {
             ApprovalStatus approvalStatus = ApprovalStatus.valueOf(status.toUpperCase());
@@ -81,7 +86,7 @@ public class UserService {
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("Invalid approval status: " + status);
         }
-        return userRepo.save(user);
+        return toDto(userRepo.save(user));
     }
 
     //DELETING a user and its Permission
@@ -96,7 +101,7 @@ public class UserService {
 
     //    UPDATING a User
     @Transactional
-    public User updateUser(Long id, UserDto userDto) {
+    public UserDto updateUser(Long id, UserDto userDto) {
         User user = userRepo.findById(id).orElseThrow(() -> new UserNotFoundException("User not found !!"));
         Role role = roleRepo.findById(userDto.getRoleId())
                 .orElseThrow(RoleException::new);
@@ -115,13 +120,22 @@ public class UserService {
         if (userDto.getPassword() != null)
             user.setPassword(userDto.getPassword());
 
-        if (userDto.getId() != null) {
-            Role roleOptional = roleRepo.findById(userDto.getId())
-                    .orElseThrow(() -> new RoleException());
-            user.setRole(roleOptional);
-        }
+        user.setRole(role);
+        return toDto(userRepo.save(user));
+    }
 
-        return user;
+    public UserDto toDto(User user) {
+        UserDto dto = new UserDto();
+        dto.setId(user.getId());
+        dto.setFirstName(user.getFirstName());
+        dto.setLastName(user.getLastName());
+        dto.setPhoneNumber(user.getPhoneNumber());
+        dto.setEmailId(user.getEmail());
+        dto.setPassword(user.getPassword());
+        if (user.getRole() != null) {
+            dto.setRoleId(user.getRole().getId());
+        }
+        return dto;
     }
 }
 

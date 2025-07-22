@@ -19,22 +19,24 @@ public class UserController {
     // Admin only: Get all vendors
     @GetMapping("/getVendors")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<User>> getVendors() {
-        List<User> vendors = userService.getAllUsers();
+    public ResponseEntity<List<UserDto>> getVendors() {
+        List<UserDto> vendors = userService.getAllVendors();
         return ResponseEntity.ok(vendors);
     }
 
+    //todo - fetch customers
+
     // All authenticated users: Create user
     @PostMapping
-    public ResponseEntity<User> createUser(@RequestBody UserDto userDto) {
-        User createdUser =  userService.createUser(userDto);
+    public ResponseEntity<UserDto> createUser(@RequestBody UserDto userDto) {
+        UserDto createdUser =  userService.createUser(userDto);
         return ResponseEntity.status(201).body(createdUser);
     }
 
     // All authenticated users: Update user
     @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody UserDto userDto) {
-        User updatedUser =  userService.updateUser(id, userDto);
+    public ResponseEntity<UserDto> updateUser(@PathVariable Long id, @RequestBody UserDto userDto) {
+        UserDto updatedUser =  userService.updateUser(id, userDto);
         return ResponseEntity.ok(updatedUser);
     }
 
@@ -64,8 +66,8 @@ public class UserController {
 
     @PutMapping("/approve/{userId}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<User> approveVendor(@PathVariable Long userId, @RequestBody String status) {
-        User approvedUser =  userService.approveVendor(userId, status);
+    public ResponseEntity<UserDto> approveVendor(@PathVariable Long userId, @RequestBody String status) {
+        UserDto approvedUser =  userService.approveVendor(userId, status);
         return ResponseEntity.ok(approvedUser);
     }
 

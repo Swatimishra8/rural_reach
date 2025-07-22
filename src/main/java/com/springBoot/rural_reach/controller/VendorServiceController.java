@@ -1,5 +1,6 @@
 package com.springBoot.rural_reach.controller;
 
+import com.springBoot.rural_reach.dto.ServiceDto;
 import com.springBoot.rural_reach.entity.ServiceOffering;
 import com.springBoot.rural_reach.service.VendorService;
 import lombok.RequiredArgsConstructor;
@@ -20,31 +21,31 @@ public class VendorServiceController {
 
     // Anyone can view services of any vendor
     @GetMapping
-    public ResponseEntity<List<ServiceOffering>> getVendorServices(@PathVariable Long vendorId) {
-        List<ServiceOffering> list = service.getServicesByVendorId(vendorId);
+    public ResponseEntity<List<ServiceDto>> getVendorServices(@PathVariable Long vendorId) {
+        List<ServiceDto> list = service.getServicesByVendorId(vendorId);
         return ResponseEntity.ok(list);
     }
 
     //  Only the vendor with matching ID can create services
     @PostMapping
     @PreAuthorize("hasRole('VENDOR') and #vendorId == principal.id")
-    public ResponseEntity<ServiceOffering> createService(
+    public ResponseEntity<ServiceDto> createService(
             @PathVariable Long vendorId,
-            @RequestBody ServiceOffering newServiceOffering
+            @RequestBody ServiceDto serviceDto
     ) {
-        ServiceOffering created = service.createServiceForVendor(vendorId, newServiceOffering);
+        ServiceDto created = service.createServiceForVendor(vendorId, serviceDto);
         return ResponseEntity.status(201).body(created);
     }
 
     // Only the owning vendor can update their service
     @PutMapping("/{serviceId}")
     @PreAuthorize("hasRole('VENDOR') and #vendorId == principal.id")
-    public ResponseEntity<ServiceOffering> updateService(
+    public ResponseEntity<ServiceDto> updateService(
             @PathVariable Long vendorId,
             @PathVariable Long serviceId,
-            @RequestBody ServiceOffering updated
+            @RequestBody ServiceDto updated
     ) {
-        ServiceOffering updatedServiceOffering = service.updateServiceForVendor(vendorId, serviceId, updated);
+        ServiceDto updatedServiceOffering = service.updateServiceForVendor(vendorId, serviceId, updated);
         return ResponseEntity.ok(updatedServiceOffering);
     }
 

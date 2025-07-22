@@ -2,6 +2,8 @@ package com.springBoot.rural_reach.authentication;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 import com.springBoot.rural_reach.entity.User;
 import org.springframework.security.core.GrantedAuthority;
@@ -20,9 +22,18 @@ public class UserPrincipal implements UserDetails{
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singleton(
-                new SimpleGrantedAuthority("ROLE_" + user.getRole().getName())
-        );
+        Set<GrantedAuthority> authorities = new HashSet<>();
+
+        // Add the role as granted authority
+        authorities.add(new SimpleGrantedAuthority("ROLE_" + user.getRole().getName()));
+
+        // Add each permission (without ROLE_ prefix)
+        if (user.getRole().getPermissions() != null) {
+            user.getRole().getPermissions().forEach(perm ->
+                    authorities.add(new SimpleGrantedAuthority(perm.getName()))
+            );
+        }
+        return authorities;
     }
 
     @Override
